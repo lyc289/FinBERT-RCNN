@@ -42,6 +42,30 @@ def build_dataset(config):
     )
     return train_data, dev_data, test_data
 
+def dataset_for_bert(config):
+    contents=[]
+    with open(config.data_path, 'r', encoding='UTF-8') as f:
+        for line in f:
+            lin=line.strip()
+            if not lin:
+                continue
+            content, label = lin.split('@')
+            contents.append((content, label))
+    return contents
+
+def evaluate_pipeline(pipeline, test_data):
+    correct = 0
+    total = len(test_data)
+    
+    for sample in test_data:
+        prediction_label = pipeline(sample[0])[0]['label'].lower()
+        true_label = sample[1]                
+        if prediction_label == true_label:
+            correct += 1
+    accuracy = correct / total
+    return accuracy
+
+
 class DatasetIterater(object):
     def __init__(self, batches, batch_size, device):
         self.batch_size = batch_size
