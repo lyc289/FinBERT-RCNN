@@ -132,3 +132,19 @@ def evaluate(config, model, data_iter, test=False):
         confusion = metrics.confusion_matrix(labels_all, predict_all)
         return acc, loss_total / len(data_iter), report, confusion
     return acc, loss_total / len(data_iter)
+
+def evaluate_pipeline(pipeline, test_data):
+    label2int = {'neutral': 0, 'positive': 1, 'negative': 2}
+    predictions_all = np.array([], dtype=int)
+    labels_all = np.array([], dtype=int)
+    for sample in test_data:
+        prediction_label = pipeline(sample[0])[0]['label'].lower()
+        prediction_label_int = label2int[prediction_label]
+        true_label = sample[1]                
+        true_label_int = label2int[true_label]
+        labels_all = np.append(labels_all, true_label_int)
+        predictions_all = np.append(predictions_all, prediction_label_int)
+    acc = metrics.accuracy_score(labels_all, predictions_all)
+    report = metrics.classification_report(labels_all, predictions_all, target_names=['neutral', 'positive', 'negative'], digits=4)
+    confusion = metrics.confusion_matrix(labels_all, predictions_all)
+    return acc, report, confusion

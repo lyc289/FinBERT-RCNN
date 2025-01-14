@@ -53,19 +53,6 @@ def dataset_for_bert(config):
             contents.append((content, label))
     return contents
 
-def evaluate_pipeline(pipeline, test_data):
-    correct = 0
-    total = len(test_data)
-    
-    for sample in test_data:
-        prediction_label = pipeline(sample[0])[0]['label'].lower()
-        true_label = sample[1]                
-        if prediction_label == true_label:
-            correct += 1
-    accuracy = correct / total
-    return accuracy
-
-
 class DatasetIterater(object):
     def __init__(self, batches, batch_size, device):
         self.batch_size = batch_size
